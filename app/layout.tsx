@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-//import { Space_Grotesk } from 'next/font/google';
+// import { Space_Grotesk } from 'next/font/google';
 
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
@@ -20,12 +20,16 @@ const spaceGrotesk = localFont({
   src: './fonts/SpaceGrotesk.woff2',
   variable: '--font-spaceGrotesk',
   weight: '300 400 500 600 700',
+  style: 'normal',
+  display: 'swap',
+  //adjustFontFallback: false,
 });
 
 // const spaceGrotesk = Space_Grotesk({
 //   subsets: ['latin'],
 //   weight: ['300', '400', '500', '600', '700'],
 //   variable: '--font-spaceGrotesk',
+//   display: 'swap',
 // });
 
 export const metadata: Metadata = {
