@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 import { useState } from 'react';
 
 type Props = {

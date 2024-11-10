@@ -1,4 +1,4 @@
-import { Header } from '@/components/header';
+import { Header } from '../../components/header';
 import { PropsWithChildren } from 'react';
 
 const DashboardLayout = ({ children }: PropsWithChildren) => {

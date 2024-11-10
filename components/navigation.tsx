@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useMedia } from 'react-use';
 
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '../components/ui/sheet';
 
-import { NavButton } from '@/components/nav-button';
+import { NavButton } from '../components/nav-button';
 import { Button } from './ui/button';
 import { Menu, RotateCwSquare } from 'lucide-react';
 
