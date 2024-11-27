@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useConfirm } from '@/hooks/use-confirm-model';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Trash } from 'lucide-react';
@@ -40,6 +41,10 @@ export function DataTable<TData, TValue>({
   onDelete,
   disabled,
 }: DataTableProps<TData, TValue>) {
+  const [ConfirmDialog, confirm] = useConfirm(
+    'Are you sure?',
+    'You are about to perform a bulk delete.'
+  );
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -63,6 +68,7 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className='flex items-center py-4'>
+        <ConfirmDialog />
         <Input
           placeholder={`Filter ${filterKey}...`}
           value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ''}
@@ -77,6 +83,13 @@ export function DataTable<TData, TValue>({
             size='sm'
             variant='outline'
             className='ml-auto font-normal text-xs hover:bg-red-600 hover:text-slate-100 hover:transition-none'
+            onClick={async () => {
+              const ok = await confirm();
+              if (ok) {
+                onDelete(table.getFilteredSelectedRowModel().rows);
+                table.resetRowSelection();
+              }
+            }}
           >
             <Trash className='size-4 mr-2' />
             Delete ({table.getFilteredSelectedRowModel().rows.length})
@@ -137,9 +150,7 @@ export function DataTable<TData, TValue>({
         <div className='flex-1 text-sm text-muted-foreground'>
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length}{' '}
-          {table.getFilteredSelectedRowModel().rows.length <= 1
-            ? 'row'
-            : 'rows'}{' '}
+          {table.getFilteredRowModel().rows.length <= 1 ? 'row' : 'rows'}{' '}
           selected.
         </div>
         <Button
