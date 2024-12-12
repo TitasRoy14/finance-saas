@@ -15,6 +15,13 @@
       "when": 1733163682126,
       "tag": "0001_dark_weapon_omega",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1733557968130,
+      "tag": "0002_youthful_risque",
+      "breakpoints": true
     }
   ]
 }
