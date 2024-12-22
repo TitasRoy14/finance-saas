@@ -5,8 +5,9 @@ import { Loader2 } from 'lucide-react';
 import WelcomeMsg from './welcome-msg';
 
 export const Header = () => {
+  // bg-[#870b21] bg-gradient-to-tr from-[#870b21] via-[#270840] to-[#230e3a]
   return (
-    <header className=' bg-[#870b21] bg-gradient-to-tr from-[#870b21] via-[#270840] to-[#230e3a] px-4 py-8 lg:px-14 pb-36'>
+    <header className='bg-gradient-to-tr from-rose-950 to-emerald-950 px-4 py-8 lg:px-14 pb-36'>
       <div className='max-w-screen-2xl mx-auto'>
         <div className='w-full flex items-center justify-between mb-14'>
           <div className='flex item-center lg:gap-x-16'>
