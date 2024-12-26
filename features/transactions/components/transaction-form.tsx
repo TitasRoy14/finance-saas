@@ -69,7 +69,7 @@ export const TransactionForm = ({
   };
 
   const handleDelete = () => {
-    // onDelete?.();
+    onDelete?.();
   };
 
   return (
@@ -191,7 +191,7 @@ export const TransactionForm = ({
             className='w-full'
           >
             <Trash className='size-4 mr-2' />
-            Delete Account
+            Delete Transaction
           </Button>
         )}
       </form>

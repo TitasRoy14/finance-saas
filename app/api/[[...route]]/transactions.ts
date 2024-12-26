@@ -1,17 +1,18 @@
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
-import { zValidator } from '@hono/zod-validator';
-import { createId } from '@paralleldrive/cuid2';
-import { parse, subDays } from 'date-fns';
-import { and, desc, eq, gte, inArray, lte, sql } from 'drizzle-orm';
-import { Hono } from 'hono';
 import { z } from 'zod';
-import { db } from '../../../database/drizzle';
+import { Hono } from 'hono';
+import { parse, subDays } from 'date-fns';
+import { createId } from '@paralleldrive/cuid2';
+import { zValidator } from '@hono/zod-validator';
+import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
+import { and, desc, eq, gte, inArray, lte, sql } from 'drizzle-orm';
+
+import { db } from '@/database/drizzle';
 import {
-  accounts,
-  categories,
-  insertTransactionSchema,
   transactions,
-} from '../../../database/schema';
+  insertTransactionSchema,
+  categories,
+  accounts,
+} from '@/database/schema';
 
 const app = new Hono()
   .get(
@@ -25,11 +26,13 @@ const app = new Hono()
       })
     ),
     clerkMiddleware(),
-    async (context) => {
-      const auth = getAuth(context);
-      const { from, to, accountId } = context.req.valid('query');
+    async (c) => {
+      const auth = getAuth(c);
+      const { from, to, accountId } = c.req.valid('query');
 
-      if (!auth?.userId) return context.json({ error: 'unauthorized' }, 401);
+      if (!auth?.userId) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
 
       const defaultTo = new Date();
       const defaultFrom = subDays(defaultTo, 30);
@@ -39,7 +42,7 @@ const app = new Hono()
         : defaultFrom;
       const endDate = to ? parse(to, 'yyyy-MM-dd', new Date()) : defaultTo;
 
-      const [data] = await db
+      const data = await db
         .select({
           id: transactions.id,
           date: transactions.date,
@@ -47,6 +50,7 @@ const app = new Hono()
           categoryId: transactions.categoryId,
           payee: transactions.payee,
           amount: transactions.amount,
+          notes: transactions.notes,
           account: accounts.name,
           accountId: transactions.accountId,
         })
@@ -63,7 +67,7 @@ const app = new Hono()
         )
         .orderBy(desc(transactions.date));
 
-      return context.json({ data });
+      return c.json({ data });
     }
   )
   .get(
@@ -75,34 +79,37 @@ const app = new Hono()
       })
     ),
     clerkMiddleware(),
-    async (context) => {
-      const auth = getAuth(context);
-      const { id } = context.req.valid('param');
+    async (c) => {
+      const auth = getAuth(c);
+      const { id } = c.req.valid('param');
 
       if (!id) {
-        return context.json({ error: 'id not found' }, 400);
+        return c.json({ error: 'Missing id' }, 400);
       }
 
-      if (!auth?.userId)
-        return context.json({ error: 'Unauthorized access' }, 401);
+      if (!auth?.userId) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
 
       const [data] = await db
         .select({
           id: transactions.id,
           date: transactions.date,
-          category: categories.name,
           categoryId: transactions.categoryId,
           payee: transactions.payee,
           amount: transactions.amount,
-          account: accounts.name,
+          notes: transactions.notes,
+          accountId: transactions.accountId,
         })
         .from(transactions)
         .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-        .where(and(eq(transactions.id, auth.userId), eq(accounts.userId, id)));
+        .where(and(eq(transactions.id, id), eq(accounts.userId, auth.userId)));
 
-      if (!data) return context.json({ error: 'Not found' }, 404);
+      if (!data) {
+        return c.json({ error: 'Not found' }, 404);
+      }
 
-      return context.json({ data });
+      return c.json({ data });
     }
   )
   .post(
@@ -114,14 +121,12 @@ const app = new Hono()
         id: true,
       })
     ),
-
-    async (context) => {
-      const auth = getAuth(context);
-
-      const values = context.req.valid('json');
+    async (c) => {
+      const auth = getAuth(c);
+      const values = c.req.valid('json');
 
       if (!auth?.userId) {
-        return context.json({ error: 'unauthorized' }, 401);
+        return c.json({ error: 'Unauthorized' }, 401);
       }
 
       const [data] = await db
@@ -132,7 +137,7 @@ const app = new Hono()
         })
         .returning();
 
-      return context.json({ data });
+      return c.json({ data });
     }
   )
   .post(
@@ -146,12 +151,12 @@ const app = new Hono()
         })
       )
     ),
-    async (context) => {
-      const auth = getAuth(context);
-      const values = context.req.valid('json');
+    async (c) => {
+      const auth = getAuth(c);
+      const values = c.req.valid('json');
 
       if (!auth?.userId) {
-        return context.json({ error: 'Unauthorized' }, 401);
+        return c.json({ error: 'Unauthorized' }, 401);
       }
 
       const data = await db
@@ -164,7 +169,7 @@ const app = new Hono()
         )
         .returning();
 
-      return context.json({ data });
+      return c.json({ data });
     }
   )
   .post(
@@ -176,15 +181,15 @@ const app = new Hono()
         ids: z.array(z.string()),
       })
     ),
-    async (context) => {
-      const auth = getAuth(context);
-      const values = context.req.valid('json');
+    async (c) => {
+      const auth = getAuth(c);
+      const values = c.req.valid('json');
 
       if (!auth?.userId) {
-        return context.json({ error: 'Unauthorized' }, 401);
+        return c.json({ error: 'Unauthorized' }, 401);
       }
 
-      const transactionsToBulkDelete = db.$with('transactions_to_delete').as(
+      const transactionsToDelete = db.$with('transactions_to_delete').as(
         db
           .select({ id: transactions.id })
           .from(transactions)
@@ -198,19 +203,19 @@ const app = new Hono()
       );
 
       const data = await db
-        .with(transactionsToBulkDelete)
+        .with(transactionsToDelete)
         .delete(transactions)
         .where(
           inArray(
             transactions.id,
-            sql`(select id from ${transactionsToBulkDelete})`
+            sql`(select id from ${transactionsToDelete})`
           )
         )
         .returning({
           id: transactions.id,
         });
 
-      return context.json({ data });
+      return c.json({ data });
     }
   )
   .patch(
@@ -228,14 +233,18 @@ const app = new Hono()
         id: true,
       })
     ),
-    async (context) => {
-      const auth = getAuth(context);
-      const { id } = context.req.valid('param');
-      const values = context.req.valid('json');
+    async (c) => {
+      const auth = getAuth(c);
+      const { id } = c.req.valid('param');
+      const values = c.req.valid('json');
 
-      if (!id) return context.json({ error: 'Missing id' }, 400);
+      if (!id) {
+        return c.json({ error: 'Missing id' }, 400);
+      }
 
-      if (!auth?.userId) return context.json({ error: 'Unauthorized' }, 401);
+      if (!auth?.userId) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
 
       const transactionsToUpdate = db.$with('transactions_to_update').as(
         db
@@ -250,13 +259,18 @@ const app = new Hono()
         .update(transactions)
         .set(values)
         .where(
-          inArray(transactions.id, sql`select id from ${transactionsToUpdate}`)
+          inArray(
+            transactions.id,
+            sql`(select id from ${transactionsToUpdate})`
+          )
         )
         .returning();
 
-      if (!data) return context.json({ error: 'Not found' }, 404);
+      if (!data) {
+        return c.json({ error: 'Not found' }, 404);
+      }
 
-      return context.json({ data });
+      return c.json({ data });
     }
   )
   .delete(
@@ -268,15 +282,19 @@ const app = new Hono()
         id: z.string().optional(),
       })
     ),
-    async (context) => {
-      const auth = getAuth(context);
-      const { id } = context.req.valid('param');
+    async (c) => {
+      const auth = getAuth(c);
+      const { id } = c.req.valid('param');
 
-      if (!id) return context.json({ error: 'Missing id' }, 400);
+      if (!id) {
+        return c.json({ error: 'Missing id' }, 400);
+      }
 
-      if (!auth?.userId) return context.json({ error: 'Unauthorized' }, 401);
+      if (!auth?.userId) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
 
-      const transactionsToDelete = db.$with('transactions_to_update').as(
+      const transactionsToDelete = db.$with('transactions_to_delete').as(
         db
           .select({ id: transactions.id })
           .from(transactions)
@@ -288,15 +306,20 @@ const app = new Hono()
         .with(transactionsToDelete)
         .delete(transactions)
         .where(
-          inArray(transactions.id, sql`select id from ${transactionsToDelete}`)
+          inArray(
+            transactions.id,
+            sql`(select id from ${transactionsToDelete})`
+          )
         )
         .returning({
           id: transactions.id,
         });
 
-      if (!data) return context.json({ error: 'Not found' }, 404);
+      if (!data) {
+        return c.json({ error: 'Not found' }, 404);
+      }
 
-      return context.json({ data });
+      return c.json({ data });
     }
   );
 

@@ -11,3 +11,11 @@ export function convertMilliunitsToAmounts(amount: number): number {
 export function convertAmountToMilliunits(amount: number): number {
   return Math.round(amount * 1000);
 }
+
+export function formatCurrency(amount: number): string {
+  // const finalValue = convertMilliunitsToAmounts(amount);
+  return Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'INR',
+  }).format(amount);
+}
