@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from '../components/ui/sheet';
 
 import { NavButton } from '../components/nav-button';
 import { Button } from './ui/button';
-import { Menu, RotateCwSquare } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 const routes = [
   {
@@ -58,7 +58,7 @@ export const Navigation = () => {
         </SheetTrigger>
         <SheetContent side='left' className='px-2'>
           {routes.map((route) => (
-            <nav className='flex flex-col gap-y-2 pt-6'>
+            <nav key={route.href} className='flex flex-col gap-y-2 pt-6'>
               <Button
                 key={route.href}
                 variant={route.href === pathname ? 'secondary' : 'ghost'}

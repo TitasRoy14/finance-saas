@@ -6,8 +6,9 @@ import { EditCategoriesSheet } from '@/features/categories/components/edit-categ
 import { NewTransactionSheet } from '@/features/transactions/components/new-transaction-sheet';
 import { useMountedState } from 'react-use';
 import { EditTransactionSheet } from '@/features/transactions/components/edit-transaction-sheet';
+import { memo } from 'react';
 
-export const SheetProvider = () => {
+export const SheetProvider = memo(() => {
   const isMounted = useMountedState();
 
   if (!isMounted) return null;
@@ -23,4 +24,4 @@ export const SheetProvider = () => {
       <EditTransactionSheet />
     </>
   );
-};
+});

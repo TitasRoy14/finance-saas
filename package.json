@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/backend": "^1.13.9",
+    "@clerk/backend": "^1.21.4",
     "@clerk/nextjs": "^5.6.2",
     "@hono/clerk-auth": "^2.0.0",
     "@hono/zod-validator": "^0.4.1",
@@ -22,6 +22,7 @@
     "@radix-ui/react-dropdown-menu": "^2.1.2",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-popover": "^1.1.4",
+    "@radix-ui/react-select": "^2.1.4",
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tanstack/react-query": "^5.59.20",
@@ -31,7 +32,7 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.36.1",
     "drizzle-zod": "^0.5.1",
-    "hono": "^4.6.4",
+    "hono": "^4.6.14",
     "lucide-react": "^0.445.0",
     "next": "14.2.13",
     "next-themes": "^0.4.3",
@@ -41,6 +42,8 @@
     "react-day-picker": "8.10.1",
     "react-dom": "^18",
     "react-hook-form": "^7.53.2",
+    "react-papaparse": "^4.4.0",
+    "react-scan": "^0.0.54",
     "react-select": "^5.9.0",
     "react-use": "^17.5.1",
     "sonner": "^1.7.0",
@@ -58,6 +61,6 @@
     "eslint-config-next": "14.2.13",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5.7.3"
   }
 }

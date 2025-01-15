@@ -7,9 +7,9 @@ import transactions from './transactions';
 
 export const runtime = 'edge';
 
-const app = new Hono().basePath('/api');
+const app: Hono = new Hono().basePath('/api');
 
-const routes = app
+export const routes = app
   .route('/accounts', accounts)
   .route('/categories', categories)
   .route('/transactions', transactions);

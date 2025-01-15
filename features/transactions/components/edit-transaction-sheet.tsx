@@ -16,6 +16,7 @@ import useTransactionDefaultValue from '@/features/transactions/entities/transac
 
 import { Loader2 } from 'lucide-react';
 import { useConfirm } from '@/hooks/use-confirm-model';
+import { memo } from 'react';
 
 export const EditTransactionSheet = () => {
   const {
@@ -87,6 +88,18 @@ export const EditTransactionSheet = () => {
         payee: '',
         notes: '',
       };
+
+  //   const TransactionForm =  <TransactionForm
+  //   id={id}
+  //   defaultValues={defaultValues}
+  //   onSubmit={handleSubmit}
+  //   onDelete={onDelete}
+  //   disabled={isPending}
+  //   categoryOptions={categoryOptions}
+  //   onCreateCategory={onCreateCategory}
+  //   accountOptions={accountOptions}
+  //   onCreateAccount={onCreateAccount}
+  // />
   return (
     <>
       <ConfirmDialog />

@@ -11,8 +11,9 @@ import { useCreatTranasaction } from '@/features/transactions/api/use-create-tra
 import { TransactionForm } from './transaction-form';
 import { Loader2 } from 'lucide-react';
 import useTransactionDefaultValue from '../entities/transaction-default-value';
+import { memo } from 'react';
 
-export const NewTransactionSheet = () => {
+export const NewTransactionSheet = memo(() => {
   const {
     categoryQuery,
     accountQuery,
@@ -66,4 +67,4 @@ export const NewTransactionSheet = () => {
       </SheetContent>
     </Sheet>
   );
-};
+});

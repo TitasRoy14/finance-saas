@@ -8,10 +8,34 @@ import { useGetTransactions } from '@/features/transactions/api/use-get-transact
 import { useNewTransaction } from '@/features/transactions/hooks/use-new-transaction';
 import { Loader2, Plus } from 'lucide-react';
 import { columns } from './columns';
+import { memo, useState } from 'react';
+import { UploadButton } from './upload-button';
+import { ImportCard } from './import-card';
 
-const TransactionPage = () => {
+enum VARIANTS {
+  LIST = 'LIST',
+  IMPORT = 'IMPORT',
+}
+
+const INITIAL_IMPORT_RESULT = {
+  data: [],
+  error: [],
+  meta: {},
+};
+const TransactionPage = memo(() => {
+  const [variant, setVariant] = useState<VARIANTS>(VARIANTS.LIST);
+  const [importResults, setImportResults] = useState(INITIAL_IMPORT_RESULT);
+  const onUpload = (results: typeof INITIAL_IMPORT_RESULT) => {
+    console.log(results);
+    setImportResults(results);
+    setVariant(VARIANTS.IMPORT);
+  };
+
+  const onCancelImport = () => {
+    setImportResults(INITIAL_IMPORT_RESULT);
+    setVariant(VARIANTS.LIST);
+  };
   const newTransaction = useNewTransaction();
-
   const bulkDeleteTransactions = useBulkDeleteTransactions();
   const transactionsQuery = useGetTransactions();
   const transactions = transactionsQuery.data || [];
@@ -36,6 +60,29 @@ const TransactionPage = () => {
     );
   }
 
+  if (variant === VARIANTS.IMPORT) {
+    return (
+      <>
+        <ImportCard
+          data={importResults.data}
+          onCancel={onCancelImport}
+          onSubmit={() => {}}
+        />
+      </>
+    );
+  }
+  const TransactionButton = (
+    <Button
+      size='sm'
+      onClick={newTransaction.onOpen}
+      className='w-full lg:w-auto'
+    >
+      <Plus className='size-4 mr-2' />
+      Add new
+    </Button>
+  );
+  const uploadButton = <UploadButton onUpload={onUpload} />;
+
   return (
     <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
       <Card className='border-none drop-shadow-lg'>
@@ -43,10 +90,11 @@ const TransactionPage = () => {
           <CardTitle className='text-xl line-clamp-1'>
             Transaction History
           </CardTitle>
-          <Button size='sm' onClick={newTransaction.onOpen}>
-            <Plus className='size-4 mr-2' />
-            Add new
-          </Button>
+
+          <div className='flex flex-col lg:flex-row gap-y-2  items-center gap-x-2'>
+            {TransactionButton}
+            {uploadButton}
+          </div>
         </CardHeader>
         <CardContent>
           <DataTable
@@ -63,6 +111,6 @@ const TransactionPage = () => {
       </Card>
     </div>
   );
-};
+});
 
 export default TransactionPage;
