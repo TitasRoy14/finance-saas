@@ -8,9 +8,8 @@ import { useGetAccounts } from '@/features/accounts/api/use-get-accounts';
 import { useNewAccount } from '@/features/accounts/hooks/use-new-account';
 import { Loader2, Plus } from 'lucide-react';
 import { columns } from './columns';
-import { memo } from 'react';
 
-const AccountsPage = memo(() => {
+const AccountsPage = () => {
   const newAccount = useNewAccount();
 
   const bulkDeleteAccounts = useBulkDeleteAccounts();
@@ -61,6 +60,6 @@ const AccountsPage = memo(() => {
       </Card>
     </div>
   );
-});
+};
 
 export default AccountsPage;
