@@ -16,12 +16,15 @@ export const useGetTransaction = (id?: string) => {
 
       const { data } = await response.json();
 
-      const transResponse = Object.assign({}, data, {
+      // const transResponse = Object.assign({}, data, {
+      //   ...data,
+      //   amount: convertMilliunitsToAmounts(data.amount),
+      // });
+
+      return {
         ...data,
         amount: convertMilliunitsToAmounts(data.amount),
-      });
-
-      return transResponse;
+      };
     },
   });
 
