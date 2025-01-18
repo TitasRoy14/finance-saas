@@ -1,14 +1,15 @@
 'use client';
-
-import { Button } from '@/components/ui/button';
-import { useNewAccount } from '@/features/accounts/hooks/use-new-account';
+import DataGrid from '@/components/data-grid';
+import { useGetSummary } from '@/features/summary/api/use-get-summary';
+import { formatCurrency } from '@/lib/utils';
 
 export default function Home() {
-  const { onOpen } = useNewAccount();
+  const { data } = useGetSummary();
+
+  console.log({ data });
   return (
-    <div>
-      <p>this is an authinticated route</p>
-      <Button onClick={onOpen}>Add account</Button>
+    <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
+      <DataGrid />
     </div>
   );
 }

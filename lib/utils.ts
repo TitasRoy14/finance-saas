@@ -1,6 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 import { clsx, type ClassValue } from 'clsx';
-import { eachDayOfInterval, isSameDay } from 'date-fns';
+import { eachDayOfInterval, format, isSameDay, subDays } from 'date-fns';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -13,7 +13,7 @@ export function convertAmountToMilliunits(amount: number): number {
   return Math.round(amount * 1000);
 }
 
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number) {
   // const finalValue = convertMilliunitsToAmounts(amount);
   return Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -60,4 +60,48 @@ export function fillMissingDays(
   });
 
   return transactionByDay;
+}
+
+type Period = {
+  from: string | Date | undefined;
+  to: string | Date | undefined;
+};
+
+export function formatDateRange(period?: Period) {
+  const defaultTo = new Date();
+  const defaultFrom = subDays(defaultTo, 30);
+
+  if (!period?.from) {
+    return `${format(defaultFrom, 'LLL dd')} - ${format(
+      defaultTo,
+      ' LLL dd, y'
+    )}`;
+  }
+  if (period.to) {
+    return `${format(period.from, 'LLL dd')} - ${format(
+      period.to,
+      ' LLL dd, y'
+    )}`;
+  }
+
+  return format(period.from, 'LLL dd, y');
+}
+
+export function formatPercentage(
+  value: number,
+  options: {
+    addPrefix?: boolean;
+  } = { addPrefix: false }
+) {
+  const division = value / 100;
+  const result = `${roundToTwoDecimals(division)}%`;
+  if (options.addPrefix && value > 0) {
+    return `+${result}`;
+  }
+
+  return result;
+}
+
+export function roundToTwoDecimals(num: number) {
+  return parseFloat(num.toFixed(0));
 }

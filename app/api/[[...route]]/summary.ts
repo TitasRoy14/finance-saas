@@ -1,21 +1,17 @@
+import { z } from 'zod';
+import { Hono } from 'hono';
+import { zValidator } from '@hono/zod-validator';
+import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
+import { subDays, parse, differenceInDays } from 'date-fns';
+import { and, desc, eq, gte, lt, lte, sql, sum } from 'drizzle-orm';
+
 import { db } from '@/database/drizzle';
 import { accounts, categories, transactions } from '@/database/schema';
-import { calculatePercentageChange, fillMissingDays } from '@/lib/utils';
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
-import { zValidator } from '@hono/zod-validator';
-import { subDays, parse, differenceInDays } from 'date-fns';
 import {
-  and,
-  eq,
-  lt as largerThan,
-  gte,
-  lte,
-  sql,
-  sum,
-  desc,
-} from 'drizzle-orm';
-import { Hono } from 'hono';
-import { z } from 'zod';
+  calculatePercentageChange,
+  fillMissingDays,
+  roundToTwoDecimals,
+} from '@/lib/utils';
 
 const app = new Hono().get(
   '/',
@@ -28,12 +24,12 @@ const app = new Hono().get(
       accountId: z.string().optional(),
     })
   ),
-  async (context) => {
-    const auth = getAuth(context);
-    const { from, to, accountId } = context.req.valid('query');
+  async (c) => {
+    const auth = getAuth(c);
+    const { from, to, accountId } = c.req.valid('query');
 
     if (!auth?.userId) {
-      return context.json({ error: 'Unauthorized' }, 401);
+      return c.json({ error: 'Unauthorized' }, 401);
     }
 
     const defaultTo = new Date();
@@ -96,7 +92,7 @@ const app = new Hono().get(
       currentPeriod.expenses,
       lastPeriod.expenses
     );
-    const remainingChange = calculatePercentageChange(
+    const RemainingChange = calculatePercentageChange(
       currentPeriod.remaining,
       lastPeriod.remaining
     );
@@ -113,7 +109,7 @@ const app = new Hono().get(
         and(
           accountId ? eq(transactions.accountId, accountId) : undefined,
           eq(accounts.userId, auth.userId),
-          largerThan(transactions.amount, 0),
+          lt(transactions.amount, 0),
           gte(transactions.date, startDate),
           lte(transactions.date, endDate)
         )
@@ -129,7 +125,6 @@ const app = new Hono().get(
     );
 
     const finalCategories = topCategories;
-
     if (otherCategories.length > 0) {
       finalCategories.push({
         name: 'Other',
@@ -141,11 +136,11 @@ const app = new Hono().get(
       .select({
         date: transactions.date,
         income:
-          sql`SUM(CASE WHEN ${transactions.amount} >=0 THEN ${transactions.amount} ELSE 0  END)`.mapWith(
+          sql`SUM(CASE WHEN ${transactions.amount} >= 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
             Number
           ),
         expenses:
-          sql`SUM(CASE WHEN ${transactions.amount} <0 THEN ${transactions.amount} ELSE 0  END)`.mapWith(
+          sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ABS(${transactions.amount}) ELSE 0 END)`.mapWith(
             Number
           ),
       })
@@ -164,7 +159,9 @@ const app = new Hono().get(
 
     const days = fillMissingDays(activeDays, startDate, endDate);
 
-    return context.json({
+    const remainingChange = roundToTwoDecimals(RemainingChange);
+
+    return c.json({
       data: {
         remainingAmount: currentPeriod.remaining,
         remainingChange,

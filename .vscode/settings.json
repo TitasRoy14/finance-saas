@@ -1,3 +1,4 @@
 {
-  "chat.commandCenter.enabled": false
+  "chat.commandCenter.enabled": false,
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }
