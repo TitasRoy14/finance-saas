@@ -3,6 +3,7 @@ import { HeaderLogo } from './header-logo';
 import { Navigation } from './navigation';
 import { Loader2 } from 'lucide-react';
 import WelcomeMsg from './welcome-msg';
+import { Filters } from './filters';
 
 export const Header = () => {
   // bg-[#870b21] bg-gradient-to-tr from-[#870b21] via-[#270840] to-[#230e3a]
@@ -22,7 +23,7 @@ export const Header = () => {
           </ClerkLoading>
         </div>
         <WelcomeMsg />
-        <
+        <Filters />
       </div>
     </header>
   );
