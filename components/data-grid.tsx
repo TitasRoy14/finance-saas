@@ -1,12 +1,11 @@
 'use client';
 
+import { DataCard, DataCardLoading } from '@/components/data-card';
 import { useGetSummary } from '@/features/summary/api/use-get-summary';
 import { formatDateRange } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import { FaPiggyBank } from 'react-icons/fa';
-import { FaArrowTrendUp, FaArrowTrendDown } from 'react-icons/fa6';
-import { DataCard, DataCardLoading } from '@/components/data-card';
-import { Suspense } from 'react';
+import { FaArrowTrendDown, FaArrowTrendUp } from 'react-icons/fa6';
 
 const DataGrid = () => {
   const { data, isLoading } = useGetSummary();

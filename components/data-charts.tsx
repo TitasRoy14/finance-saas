@@ -1,6 +1,5 @@
-import { useGetSummary } from '@/features/summary/api/use-get-summary';
 import { Chart, ChartLoading } from '@/components/chart';
-import { BarVariant } from './bar-variant';
+import { useGetSummary } from '@/features/summary/api/use-get-summary';
 import { SpendingPie, SpendingPieLoading } from './spending-pie';
 
 export const DataCharts = () => {

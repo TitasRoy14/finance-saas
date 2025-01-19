@@ -19,6 +19,7 @@ interface SelectedColumnsState {
 type Props = {
   data: string[][];
   onCancel: () => void;
+  // eslint-disable-next-line
   onSubmit: (data: any) => void;
 };
 
@@ -79,6 +80,7 @@ export const ImportCard = ({ data, onCancel, onSubmit }: Props) => {
     };
 
     const arrayOfData = mappedData.body.map((row) => {
+      // eslint-disable-next-line
       return row.reduce((acc: any, cell, index) => {
         const header = mappedData.headers[index];
         if (header !== null) {

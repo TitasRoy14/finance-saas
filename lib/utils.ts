@@ -30,7 +30,9 @@ export function calculatePercentageChange(current: number, previous: number) {
 export function fillMissingDays(
   activeDays: {
     date: Date;
+    // eslint-disable-next-line
     income: Number;
+    // eslint-disable-next-line
     expenses: Number;
   }[],
   startDate: Date,
