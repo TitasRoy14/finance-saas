@@ -25,8 +25,8 @@ export const AreaVariant = ({ data }: Props) => {
         <CartesianGrid strokeDasharray='3 3' />
         <defs>
           <linearGradient id='income' x1='0' y1='0' x2='0' y2='1'>
-            <stop offset='2%' stopColor='#3d82f6' strokeOpacity={0.8} />
-            <stop offset='98%' stopColor='#3d82f6' strokeOpacity={0} />
+            <stop offset='2%' stopColor='#441a87' strokeOpacity={1} />
+            <stop offset='98%' stopColor='#441a87' strokeOpacity={0} />
           </linearGradient>
           <linearGradient id='expenses' x1='0' y1='0' x2='0' y2='1'>
             <stop offset='2%' stopColor='#f43f5e' strokeOpacity={0.8} />

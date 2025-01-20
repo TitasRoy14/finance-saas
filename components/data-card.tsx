@@ -1,6 +1,6 @@
 import { IconType } from 'react-icons';
 import { VariantProps, cva } from 'class-variance-authority';
-import { cn, formatCurrency, formatPercentage } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 import {
   Card,
   CardContent,
@@ -18,10 +18,11 @@ const boxVariant = cva('rounded-md p-3', {
       success: 'bg-emerald-500/20',
       danger: 'bg-rose-500/20',
       warning: 'bg-yellow-500/20',
+      bluish:'bg-[#261147]/20'
     },
   },
   defaultVariants: {
-    variant: 'default',
+    variant: 'bluish',
   },
 });
 
@@ -32,10 +33,11 @@ const iconVariant = cva('shrink-0 size-6', {
       success: 'fill-emerald-500',
       danger: 'fill-rose-500',
       warning: 'fill-yellow-500',
+      bluish:'fill-[#261147]'
     },
   },
   defaultVariants: {
-    variant: 'default',
+    variant: 'bluish',
   },
 });
 
@@ -54,7 +56,6 @@ export const DataCard = ({
   title,
   icon: Icon,
   dateRange,
-  percentageChange = 0,
   value = 0,
   variant,
 }: DataCardProps) => {
@@ -82,7 +83,7 @@ export const DataCard = ({
             formattingFn={formatCurrency}
           />
         </h1>
-        <p
+        {/* <p
           className={cn(
             'text-muted-foreground text-sm line-clamp-1',
             percentageChange > 0 && 'text-emerald-500',
@@ -91,7 +92,7 @@ export const DataCard = ({
         >
           {formatPercentage(percentageChange, { addPrefix: true })} from last
           period
-        </p>
+        </p> */}
       </CardContent>
     </Card>
   );

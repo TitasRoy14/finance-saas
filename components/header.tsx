@@ -6,9 +6,11 @@ import WelcomeMsg from './welcome-msg';
 import { Filters } from './filters';
 
 export const Header = () => {
+//#8B0000 #2F4F4F #261147
   // bg-[#870b21] bg-gradient-to-tr from-[#870b21] via-[#270840] to-[#230e3a]
+  //bg-gradient-to-tr from-rose-700 via-rose-800 to-rose-900
   return (
-    <header className='bg-gradient-to-tr from-rose-950 to-emerald-950 px-4 py-8 lg:px-14 pb-36'>
+    <header className='bg-[#261147] px-4 py-8 lg:px-14 pb-36'>
       <div className='max-w-screen-2xl mx-auto'>
         <div className='w-full flex items-center justify-between mb-14'>
           <div className='flex item-center lg:gap-x-16'>
