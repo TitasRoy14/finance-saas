@@ -1,0 +1,8 @@
+id,first_name,last_name,username,primary_email_address,primary_phone_number,verified_email_addresses,unverified_email_addresses,verified_phone_numbers,unverified_phone_numbers,totp_secret,password_digest,password_hasher
+user_2ro3UKQigMiaHdK4YYO7UthVVLE,Kabita,Roy,,kabitakapu@gmail.com,,kabitakapu@gmail.com,,,,,,
+user_2rqBMg9tfJFnfYwGvxG7VJg4yiA,BEJON,BHATTACHARJEE,,bejonbh.123@gmail.com,,bejonbh.123@gmail.com,,,,,,
+user_2rtlLsjadmVsfVDmvW3rUhXUuLs,Suparna,Jana,,janasuparna1999@gmail.com,+918538016229,janasuparna1999@gmail.com,,+918538016229,,,,
+user_2rtt6AcjsuYqLa5rHHiRk1Ihty3,Salma,Yasmin,,salmayasmin3004@gmail.com,+918910982156,salmayasmin3004@gmail.com,,+918910982156,,,,
+user_2ru2Yc5zAeLSagZI4gf9VvDwS6m,Titas,Roy,,titasray800@gmail.com,,titasray800@gmail.com,,,,,$2a$10$GB9WyvJLU5UrZGpd6Ww/Y.ZzUbIVV21S25hIUBOx/gDg5LUlDxrAm,bcrypt
+user_2rvipLfbCvicbr15j17NZXAXHKq,HOD CSE,SEACOM,,hod.cse.seacom206@gmail.com,,hod.cse.seacom206@gmail.com,,,,,,
+user_2vV5zLDXxKYXuBXNTAbgWfckUys,,,,yesoc96162@buides.com,,yesoc96162@buides.com,,,,,$2a$10$NZIOHpVW57tB/J0/9YTHMugqNj.wdDgFpTJpVBID8nCa5anPQoI6.,bcrypt

@@ -11,7 +11,7 @@ export const CustomTooltip = ({ active, payload }: any) => {
   const expenses = payload[1].value;
 
   return (
-    <div className='rounded-sm bg-white shadow-sm border overflow-hidden'>
+    <div className='rounded-sm bg-white shadow-xs border overflow-hidden'>
       <div className='text-sm p-2 px-3 bg-muted text-muted-foreground'>
         {format(date, 'MMM dd, yyyy')}
       </div>

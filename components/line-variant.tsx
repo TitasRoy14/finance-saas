@@ -37,14 +37,14 @@ export const LineVariant = ({ data }: Props) => {
           dataKey='income'
           stroke='#441a87'
           strokeWidth={2}
-          className='drop-shadow-sm'
+          className='drop-shadow-xs'
         />
         <Line
           dot={false}
           dataKey='expenses'
           stroke='#f43f5e'
           strokeWidth={2}
-          className='drop-shadow-sm'
+          className='drop-shadow-xs'
         />
       </LineChart>
     </ResponsiveContainer>

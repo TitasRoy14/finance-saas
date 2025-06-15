@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 import { subDays, parse, differenceInDays } from 'date-fns';
 import { and, desc, eq, gte, lt, lte, sql, sum } from 'drizzle-orm';
 
@@ -12,10 +11,11 @@ import {
   fillMissingDays,
   roundToTwoDecimals,
 } from '@/lib/utils';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 const app = new Hono().get(
   '/',
-  clerkMiddleware(),
   zValidator(
     'query',
     z.object({
@@ -25,10 +25,12 @@ const app = new Hono().get(
     })
   ),
   async (c) => {
-    const auth = getAuth(c);
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
     const { from, to, accountId } = c.req.valid('query');
 
-    if (!auth?.userId) {
+    if (!session) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
@@ -74,12 +76,12 @@ const app = new Hono().get(
     }
 
     const [currentPeriod] = await fetchFinancialData(
-      auth.userId,
+      session.session.userId,
       startDate,
       endDate
     );
     const [lastPeriod] = await fetchFinancialData(
-      auth.userId,
+      session.session.userId,
       lastPeriodStart,
       lastPeriodEnd
     );
@@ -108,7 +110,7 @@ const app = new Hono().get(
       .where(
         and(
           accountId ? eq(transactions.accountId, accountId) : undefined,
-          eq(accounts.userId, auth.userId),
+          eq(accounts.userId, session.session.userId),
           lt(transactions.amount, 0),
           gte(transactions.date, startDate),
           lte(transactions.date, endDate)
@@ -149,7 +151,7 @@ const app = new Hono().get(
       .where(
         and(
           accountId ? eq(transactions.accountId, accountId) : undefined,
-          eq(accounts.userId, auth.userId),
+          eq(accounts.userId, session.session.userId),
           gte(transactions.date, startDate),
           lte(transactions.date, endDate)
         )

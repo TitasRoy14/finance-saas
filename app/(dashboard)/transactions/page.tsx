@@ -70,7 +70,7 @@ const TransactionPage = () => {
 
   if (transactionsQuery.isLoading) {
     return (
-      <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
+      <div className='max-w-(--breakpoint-2xl) mx-auto w-full pb-10 -mt-24'>
         <Card className='border-none drop-shadow-lg'>
           <CardHeader>
             <Skeleton className='h-8 w-48' />
@@ -110,7 +110,7 @@ const TransactionPage = () => {
   const uploadButton = <UploadButton onUpload={onUpload} />;
 
   return (
-    <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
+    <div className='max-w-(--breakpoint-2xl) mx-auto w-full pb-10 -mt-24'>
       <Card className='border-none drop-shadow-lg'>
         <CardHeader className='gap-y-2 lg:flex-row lg:items-center lg:justify-between'>
           <CardTitle className='text-xl line-clamp-1'>

@@ -60,7 +60,7 @@ export const DataCard = ({
   variant,
 }: DataCardProps) => {
   return (
-    <Card className='border-none drop-shadow-sm'>
+    <Card className='border-none drop-shadow-xs'>
       <CardHeader className='flex flex-row items-center justify-between gap-x-4'>
         <div className='space-y-2'>
           <CardTitle className='text-2xl line-clamp-1'>{title}</CardTitle>
@@ -100,7 +100,7 @@ export const DataCard = ({
 
 export const DataCardLoading = () => {
   return (
-    <Card className='border-none drop-shadow-sm h-[192px]'>
+    <Card className='border-none drop-shadow-xs h-[192px]'>
       <CardHeader className='flex flex-row items-center justify-between gap-x-4'>
         <div>
           <Skeleton className='h-6 w-24' />

@@ -31,7 +31,7 @@ export const SpendingPie = ({ data = [] }: Props) => {
   };
 
   return (
-    <Card className='border-none drop-shadow-sm'>
+    <Card className='border-none drop-shadow-xs'>
       <CardHeader className='flex space-y-2 lg:space-y-0 lg:flex-row lg:items-center justify-between'>
         <CardTitle className='text-xl line-clamp-1'>Categories</CardTitle>
         <Select defaultValue={chartType} onValueChange={onTypeChange}>
@@ -82,7 +82,7 @@ export const SpendingPie = ({ data = [] }: Props) => {
 
 export const SpendingPieLoading = () => {
   return (
-    <Card className='border-none drop-shadow-sm'>
+    <Card className='border-none drop-shadow-xs'>
       <CardHeader className='flex space-y-2 lg:space-y-0 lg:flex-row lg:items-center justify-between'>
         <Skeleton className='h-8 w-48' />
         <Skeleton className='h-8 lg:w-[120px] w-full' />

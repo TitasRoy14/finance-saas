@@ -2,16 +2,19 @@ import { Hono } from 'hono';
 import { db } from '../../../database/drizzle';
 import { categories, insertCategoriesSchema } from '../../../database/schema';
 import { zValidator } from '@hono/zod-validator';
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 import { and, eq, inArray } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 import { z } from 'zod';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 const app = new Hono()
-  .get('/', clerkMiddleware(), async (context) => {
-    const auth = getAuth(context);
+  .get('/', async (context) => {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!auth?.userId) return context.json({ error: 'unauthorized' }, 401);
+    if (!session) return context.json({ error: 'unauthorized' }, 401);
 
     const data = await db
       .select({
@@ -19,7 +22,7 @@ const app = new Hono()
         name: categories.name,
       })
       .from(categories)
-      .where(eq(categories.userId, auth.userId));
+      .where(eq(categories.userId, session.session.userId));
     return context.json({ data });
   })
   .get(
@@ -30,17 +33,17 @@ const app = new Hono()
         id: z.string().optional(),
       })
     ),
-    clerkMiddleware(),
     async (context) => {
-      const auth = getAuth(context);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const { id } = context.req.valid('param');
 
       if (!id) {
         return context.json({ error: 'id not found' }, 400);
       }
 
-      if (!auth?.userId)
-        return context.json({ error: 'Unauthorized access' }, 401);
+      if (!session) return context.json({ error: 'Unauthorized access' }, 401);
 
       const [data] = await db
         .select({
@@ -48,7 +51,12 @@ const app = new Hono()
           name: categories.name,
         })
         .from(categories)
-        .where(and(eq(categories.userId, auth.userId), eq(categories.id, id)));
+        .where(
+          and(
+            eq(categories.userId, session.session.userId),
+            eq(categories.id, id)
+          )
+        );
 
       if (!data) return context.json({ error: 'Not found' }, 404);
 
@@ -57,7 +65,6 @@ const app = new Hono()
   )
   .post(
     '/',
-    clerkMiddleware(),
     zValidator(
       'json',
       insertCategoriesSchema.pick({
@@ -66,11 +73,13 @@ const app = new Hono()
     ),
 
     async (context) => {
-      const auth = getAuth(context);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
 
       const values = context.req.valid('json');
 
-      if (!auth?.userId) {
+      if (!session) {
         return context.json({ error: 'unauthorized' }, 401);
       }
 
@@ -78,7 +87,7 @@ const app = new Hono()
         .insert(categories)
         .values({
           id: createId(),
-          userId: auth.userId,
+          userId: session.session.userId,
           ...values,
         })
         .returning();
@@ -88,7 +97,6 @@ const app = new Hono()
   )
   .post(
     '/bulk-delete',
-    clerkMiddleware(),
     zValidator(
       'json',
       z.object({
@@ -96,10 +104,12 @@ const app = new Hono()
       })
     ),
     async (context) => {
-      const auth = getAuth(context);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const values = context.req.valid('json');
 
-      if (!auth?.userId) {
+      if (!session) {
         return context.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -107,7 +117,7 @@ const app = new Hono()
         .delete(categories)
         .where(
           and(
-            eq(categories.userId, auth.userId),
+            eq(categories.userId, session.session.userId),
             inArray(categories.id, values.ids)
           )
         )
@@ -120,7 +130,6 @@ const app = new Hono()
   )
   .patch(
     '/:id',
-    clerkMiddleware(),
     zValidator(
       'param',
       z.object({
@@ -134,18 +143,25 @@ const app = new Hono()
       })
     ),
     async (context) => {
-      const auth = getAuth(context);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const { id } = context.req.valid('param');
       const values = context.req.valid('json');
 
       if (!id) return context.json({ error: 'Missing id' }, 400);
 
-      if (!auth?.userId) return context.json({ error: 'Unauthorized' }, 401);
+      if (!session) return context.json({ error: 'Unauthorized' }, 401);
 
       const [data] = await db
         .update(categories)
         .set(values)
-        .where(and(eq(categories.userId, auth.userId), eq(categories.id, id)))
+        .where(
+          and(
+            eq(categories.userId, session.session.userId),
+            eq(categories.id, id)
+          )
+        )
         .returning();
 
       if (!data) return context.json({ error: 'Not found' }, 404);
@@ -155,7 +171,6 @@ const app = new Hono()
   )
   .delete(
     '/:id',
-    clerkMiddleware(),
     zValidator(
       'param',
       z.object({
@@ -163,16 +178,23 @@ const app = new Hono()
       })
     ),
     async (context) => {
-      const auth = getAuth(context);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const { id } = context.req.valid('param');
 
       if (!id) return context.json({ error: 'Missing id' }, 400);
 
-      if (!auth?.userId) return context.json({ error: 'Unauthorized' }, 401);
+      if (!session) return context.json({ error: 'Unauthorized' }, 401);
 
       const [data] = await db
         .delete(categories)
-        .where(and(eq(categories.userId, auth.userId), eq(categories.id, id)))
+        .where(
+          and(
+            eq(categories.userId, session.session.userId),
+            eq(categories.id, id)
+          )
+        )
         .returning({
           id: categories.id,
         });

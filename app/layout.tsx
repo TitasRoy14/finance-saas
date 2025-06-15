@@ -3,7 +3,6 @@ import localFont from 'next/font/local';
 import { Space_Grotesk } from 'next/font/google';
 
 import './globals.css';
-import { ClerkProvider } from '@clerk/nextjs';
 import { QueryProvider } from '@/provider/query-provider';
 import { SheetProvider } from '@/provider/sheet-provider';
 import { Toaster } from '@/components/ui/sonner';
@@ -36,18 +35,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang='en'>
-        <body
-          className={`${geistSans.variable} ${spaceGrotesk.variable} ${geistMono.variable} antialiased`}
-        >
-          <QueryProvider>
-            <SheetProvider />
-            <Toaster />
-            {children}
-          </QueryProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${spaceGrotesk.variable} ${geistMono.variable} antialiased`}
+      >
+        <QueryProvider>
+          <SheetProvider />
+          <Toaster />
+          {children}
+        </QueryProvider>
+      </body>
+    </html>
   );
 }

@@ -32,8 +32,8 @@ export const BarVariant = ({ data }: Props) => {
           tickMargin={16}
         />
         <Tooltip content={<CustomTooltip />} />
-        <Bar dataKey='income' fill='#441a87' className='drop-shadow-sm' />
-        <Bar dataKey='expenses' fill='#f43f5e' className='drop-shadow-sm' />
+        <Bar dataKey='income' fill='#441a87' className='drop-shadow-xs' />
+        <Bar dataKey='expenses' fill='#f43f5e' className='drop-shadow-xs' />
       </BarChart>
     </ResponsiveContainer>
   );

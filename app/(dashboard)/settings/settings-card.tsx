@@ -18,7 +18,7 @@ const SettingsCard = () => {
  const {data:connectedBank,isLoading:isLoadingConnectedBank} = useGetConnectedBank();
 
  if(isLoadingConnectedBank){
-  return <Card className='border-none drop-shadow-sm'>
+  return <Card className='border-none drop-shadow-xs'>
     <CardHeader>
       <CardTitle className='text-xl line-clamp-1'>
           <Skeleton className='h-6 w-24' />
@@ -32,14 +32,14 @@ const SettingsCard = () => {
   </Card>
  }
   return (
-    <Card className='border-none drop-shadow-sm'>
+    <Card className='border-none drop-shadow-xs'>
       <CardHeader>
         <CardTitle className='text-xl line-clamp-1'>Settings</CardTitle>
       </CardHeader>
       <CardContent>
         <Separator />
         <div className='flex flex-col gap-y-2 lg:flex-row items-center py-4'>
-          <p className='text-sm font-medium w-full lg:w-[16.5rem]'>
+          <p className='text-sm font-medium w-full lg:w-66'>
             Bank Account
           </p>
           <div className='w-full flex items-center justify-between'>

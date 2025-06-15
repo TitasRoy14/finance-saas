@@ -101,8 +101,8 @@ export const ImportCard = ({ data, onCancel, onSubmit }: Props) => {
   };
 
   return (
-    <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
-      <Card className='border-none drop-shadow-sm'>
+    <div className='max-w-(--breakpoint-2xl) mx-auto w-full pb-10 -mt-24'>
+      <Card className='border-none drop-shadow-xs'>
         <CardHeader className='gap-y-2 lg:flex-row lg:items-center lg:justify-between'>
           <CardTitle className='text-xl line-clamp-1'>
             Import Transaction

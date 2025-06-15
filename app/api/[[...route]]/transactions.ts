@@ -3,7 +3,6 @@ import { Hono } from 'hono';
 import { parse, subDays } from 'date-fns';
 import { createId } from '@paralleldrive/cuid2';
 import { zValidator } from '@hono/zod-validator';
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 import { and, desc, eq, gte, inArray, lte, sql } from 'drizzle-orm';
 
 import { db } from '@/database/drizzle';
@@ -13,6 +12,8 @@ import {
   categories,
   accounts,
 } from '@/database/schema';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 const app = new Hono()
   .get(
@@ -25,12 +26,14 @@ const app = new Hono()
         accountId: z.string().optional(),
       })
     ),
-    clerkMiddleware(),
+
     async (c) => {
-      const auth = getAuth(c);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const { from, to, accountId } = c.req.valid('query');
 
-      if (!auth?.userId) {
+      if (!session) {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -60,7 +63,7 @@ const app = new Hono()
         .where(
           and(
             accountId ? eq(transactions.accountId, accountId) : undefined,
-            eq(accounts.userId, auth.userId),
+            eq(accounts.userId, session.session.userId),
             gte(transactions.date, startDate),
             lte(transactions.date, endDate)
           )
@@ -78,16 +81,18 @@ const app = new Hono()
         id: z.string().optional(),
       })
     ),
-    clerkMiddleware(),
+
     async (c) => {
-      const auth = getAuth(c);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const { id } = c.req.valid('param');
 
       if (!id) {
         return c.json({ error: 'Missing id' }, 400);
       }
 
-      if (!auth?.userId) {
+      if (!session) {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -103,7 +108,12 @@ const app = new Hono()
         })
         .from(transactions)
         .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-        .where(and(eq(transactions.id, id), eq(accounts.userId, auth.userId)));
+        .where(
+          and(
+            eq(transactions.id, id),
+            eq(accounts.userId, session.session.userId)
+          )
+        );
 
       if (!data) {
         return c.json({ error: 'Not found' }, 404);
@@ -114,7 +124,7 @@ const app = new Hono()
   )
   .post(
     '/',
-    clerkMiddleware(),
+
     zValidator(
       'json',
       insertTransactionSchema.omit({
@@ -122,10 +132,12 @@ const app = new Hono()
       })
     ),
     async (c) => {
-      const auth = getAuth(c);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const values = c.req.valid('json');
 
-      if (!auth?.userId) {
+      if (!session) {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -142,7 +154,7 @@ const app = new Hono()
   )
   .post(
     '/bulk-create',
-    clerkMiddleware(),
+
     zValidator(
       'json',
       z.array(
@@ -152,10 +164,12 @@ const app = new Hono()
       )
     ),
     async (c) => {
-      const auth = getAuth(c);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const values = c.req.valid('json');
 
-      if (!auth?.userId) {
+      if (!session) {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -174,7 +188,7 @@ const app = new Hono()
   )
   .post(
     '/bulk-delete',
-    clerkMiddleware(),
+
     zValidator(
       'json',
       z.object({
@@ -182,10 +196,12 @@ const app = new Hono()
       })
     ),
     async (c) => {
-      const auth = getAuth(c);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const values = c.req.valid('json');
 
-      if (!auth?.userId) {
+      if (!session) {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -197,7 +213,7 @@ const app = new Hono()
           .where(
             and(
               inArray(transactions.id, values.ids),
-              eq(accounts.userId, auth.userId)
+              eq(accounts.userId, session.session.userId)
             )
           )
       );
@@ -220,7 +236,7 @@ const app = new Hono()
   )
   .patch(
     '/:id',
-    clerkMiddleware(),
+
     zValidator(
       'param',
       z.object({
@@ -234,7 +250,9 @@ const app = new Hono()
       })
     ),
     async (c) => {
-      const auth = getAuth(c);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const { id } = c.req.valid('param');
       const values = c.req.valid('json');
 
@@ -242,7 +260,7 @@ const app = new Hono()
         return c.json({ error: 'Missing id' }, 400);
       }
 
-      if (!auth?.userId) {
+      if (!session) {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -251,7 +269,12 @@ const app = new Hono()
           .select({ id: transactions.id })
           .from(transactions)
           .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-          .where(and(eq(transactions.id, id), eq(accounts.userId, auth.userId)))
+          .where(
+            and(
+              eq(transactions.id, id),
+              eq(accounts.userId, session.session.userId)
+            )
+          )
       );
 
       const [data] = await db
@@ -275,7 +298,7 @@ const app = new Hono()
   )
   .delete(
     '/:id',
-    clerkMiddleware(),
+
     zValidator(
       'param',
       z.object({
@@ -283,14 +306,16 @@ const app = new Hono()
       })
     ),
     async (c) => {
-      const auth = getAuth(c);
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
       const { id } = c.req.valid('param');
 
       if (!id) {
         return c.json({ error: 'Missing id' }, 400);
       }
 
-      if (!auth?.userId) {
+      if (!session) {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -299,7 +324,12 @@ const app = new Hono()
           .select({ id: transactions.id })
           .from(transactions)
           .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-          .where(and(eq(transactions.id, id), eq(accounts.userId, auth.userId)))
+          .where(
+            and(
+              eq(transactions.id, id),
+              eq(accounts.userId, session.session.userId)
+            )
+          )
       );
 
       const [data] = await db
