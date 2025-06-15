@@ -7,7 +7,8 @@
     "clerk-script": "tsx script/migrate-clerk.ts",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "vercel:preinstall": "npm install --legacy-peer-deps"
   },
   "dependencies": {
     "@dicebear/collection": "^9.2.2",
