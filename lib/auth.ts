@@ -27,9 +27,9 @@ export const auth = betterAuth({
 
   plugins: [
     passkey({
-      rpID: 'expensio-xi.vercel.app', // or your domain
-      rpName: 'Expensio',
-      origin: 'https://expensio-xi.vercel.app/', // or your origin
+      // rpID: 'expensio-xi.vercel.app', // or your domain
+      // rpName: 'Expensio',
+      // origin: 'https://expensio-xi.vercel.app/', // or your origin
     }),
   ],
 });
